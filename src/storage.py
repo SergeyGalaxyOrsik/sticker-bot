@@ -162,3 +162,12 @@ class Storage:
             )
             conn.commit()
 
+    def update_short_name(self, pack_id: int, short_name: str) -> None:
+        with self._connect() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "UPDATE user_packs SET short_name=?, updated_at=? WHERE id=?",
+                (short_name, self._now(), pack_id),
+            )
+            conn.commit()
+

@@ -62,6 +62,7 @@ async def cmd_newpack(message: Message) -> None:
     title = args[1].strip()
     # Telegram requires short name to end with _by_<botusername>
     short_base = build_short_name(title)
+    # Telegram requires short name to end with _by_<botusername>
     suffix = f"_by_{router.bot_username}"
     short_name = (short_base[:64 - len(suffix)] + suffix) if len(short_base) + len(suffix) > 64 else short_base + suffix
     pack = router.storage.ensure_pack_record(user_id, title, short_name, fmt="static")
@@ -186,6 +187,14 @@ async def on_media(message: Message) -> None:
         # Ensure pack exists on Telegram or create
         title = pack["title"]
         short_name = pack["short_name"]
+        # ensure suffix compliance before creation
+        if not short_name.endswith(f"_by_{router.bot_username}"):
+            suffix = f"_by_{router.bot_username}"
+            base = short_name
+            short_name_new = (base[:64 - len(suffix)] + suffix) if len(base) + len(suffix) > 64 else base + suffix
+            if short_name_new != short_name:
+                router.storage.update_short_name(pack["id"], short_name_new)
+                short_name = short_name_new
 
         # Upload sticker file first
         uploaded = await UploadStickerFile(
@@ -297,6 +306,13 @@ async def on_emoji_reply(message: Message, orig: Message) -> None:
 
         title = pack["title"]
         short_name = pack["short_name"]
+        if not short_name.endswith(f"_by_{router.bot_username}"):
+            suffix = f"_by_{router.bot_username}"
+            base = short_name
+            short_name_new = (base[:64 - len(suffix)] + suffix) if len(base) + len(suffix) > 64 else base + suffix
+            if short_name_new != short_name:
+                router.storage.update_short_name(pack["id"], short_name_new)
+                short_name = short_name_new
 
         uploaded = await UploadStickerFile(
             user_id=user_id,
