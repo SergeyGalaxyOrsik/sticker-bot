@@ -16,6 +16,16 @@ Setup:
    python -m src.main
    ```
 
+Docker:
+```bash
+# Build
+docker compose build
+# Run (uses .env for BOT_TOKEN, persists DB to ./data)
+docker compose up -d
+# View logs
+docker compose logs -f
+```
+
 Usage (basic):
 - /start — help
 - /newpack <title> — create/select a pack (first media adds & creates on Telegram)

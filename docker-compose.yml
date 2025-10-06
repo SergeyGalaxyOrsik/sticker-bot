@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  bot:
+    build: .
+    container_name: stiker-bot
+    env_file:
+      - .env
+    environment:
+      - DATABASE_PATH=/app/data/bot.db
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+
